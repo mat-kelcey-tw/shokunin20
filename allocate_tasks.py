@@ -1,19 +1,24 @@
 #!/usr/bin/env python3
 
 from ortools.linear_solver import pywraplp
+import argparse
 import sys
 
-num_children = 3
+parser = argparse.ArgumentParser(
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('--num-children', type=int, default=3)
+opts = parser.parse_args()
+
 task_points = list(map(int, sys.stdin))
 
-if sum(task_points) % num_children != 0:
+if sum(task_points) % opts.num_children != 0:
     print(f"FAILDOG, task points sum to {sum(task_points)}"
-          f" which can't be allocated between {num_children} children.",
+          f" which can't be allocated between {opts.num_children} children.",
           file=sys.stderr)
     exit(1)
 
 task_ids = list(range(len(task_points)))
-children_ids = list(range(num_children))
+children_ids = list(range(opts.num_children))
 
 solver = pywraplp.Solver('simple_mip_program',
                          pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)
@@ -33,7 +38,7 @@ for t in task_ids:
 
 # constraint 2: each child must do an equal amount of the work.
 # i.e. x[(t, c)] summed over tasks must be equal for all kids.
-equal_amount_of_work = sum(task_points) // 3
+equal_amount_of_work = sum(task_points) // opts.num_children
 for c in children_ids:
     total_task_points_for_child = sum(
         x[t, c] * task_points[t] for t in task_ids)
