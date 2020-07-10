@@ -1,4 +1,5 @@
-README
+task allocation using CBC_MIXED_INTEGER_PROGRAMMING solver
+from [ortools](https://developers.google.com/optimization) 
 
 ```
 ./allocate_tasks.py < task_points.txt
